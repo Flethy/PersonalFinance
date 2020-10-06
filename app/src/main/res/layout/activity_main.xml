@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/background_color"
+    tools:context=".MainActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+        <LinearLayout
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/comfortaa_bold"
+                android:gravity="center"
+                android:text="Авторизация"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/colorLight" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:textColor="@color/colorDark"
+                android:textColorHint="@color/colorLight"
+                android:inputType="textEmailAddress"
+                android:hint="Email:"
+                android:fontFamily="@font/comfortaa_bold"
+                android:id="@+id/email_login"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:textColor="@color/colorDark"
+                android:textColorHint="@color/colorLight"
+                android:inputType="textPassword"
+                android:hint="Пароль:"
+                android:fontFamily="@font/comfortaa_bold"
+                android:id="@+id/password_login"
+                />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@color/colorLight"
+                android:textColor="@color/colorDark"
+                android:text="Войти"
+                android:fontFamily="@font/comfortaa_bold"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:id="@+id/btn_login"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/colorDark"
+                android:text="Забыли пароль?"
+                android:fontFamily="@font/comfortaa_bold"
+                android:padding="5dp"
+                android:id="@+id/forget_password"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/colorDark"
+                android:text="Ещё нет аккаунта? Зарегистрироваться."
+                android:fontFamily="@font/comfortaa_bold"
+                android:padding="5dp"
+                android:id="@+id/singup_reg"
+                />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

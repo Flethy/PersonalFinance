@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/accounts"
+        android:title="Счета"
+        android:icon="@drawable/android"/>
+
+    <item android:id="@+id/categories"
+        android:title="Категории"
+        android:icon="@drawable/android"/>
+
+    <item android:id="@+id/operations"
+        android:title="Операции"
+        android:icon="@drawable/android"/>
+
+    <item android:id="@+id/overview"
+        android:title="Обзор"
+        android:icon="@drawable/android"/>
+
+    <item android:id="@+id/logout"
+        android:title="Выйти"
+        android:icon="@drawable/android"/>
+
+</menu>

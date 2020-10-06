@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center|bottom"
+    app:theme="@style/Base.ThemeOverlay.AppCompat.Dark"
+    android:orientation="vertical"
+    android:background="@color/colorDark">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="МЕНЮ"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="@font/comfortaa_bold"
+        android:textSize="22sp"
+        />
+
+</LinearLayout>
