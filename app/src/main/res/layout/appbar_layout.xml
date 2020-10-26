@@ -77,18 +77,22 @@
             android:layout_height="match_parent">
 
 
-
             <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/bottomNavigationBar"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_gravity="bottom"
+                android:layout_marginStart="-15dp"
+                android:layout_marginEnd="-15dp"
                 android:background="@android:color/transparent"
                 android:outlineSpotShadowColor="@android:color/transparent"
+                android:outlineAmbientShadowColor="@android:color/transparent"
                 android:theme="@style/Widget.BottomNavigationView"
                 app:itemTextColor="@android:color/black"
                 app:labelVisibilityMode="labeled"
                 app:layout_constraintBottom_toTopOf="@+id/line"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:menu="@menu/bottommenu" />
 
             <View
