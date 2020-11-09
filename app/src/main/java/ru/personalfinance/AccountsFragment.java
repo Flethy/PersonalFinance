@@ -2,54 +2,41 @@ package ru.personalfinance;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.text.DateFormat;
-import java.util.Date;
-
-import ru.personalfinance.Model.Data;
+import ru.personalfinance.Model.Account;
 
 public class AccountsFragment extends Fragment {
 
     // Floating button
 
     private FloatingActionButton fab_main_btn;
-    private FloatingActionButton fab_income_btn;
-    private FloatingActionButton fab_expense_btn;
 
-    // Floating button textview
-
-    private TextView fab_income_txt;
-    private TextView fab_expense_txt;
-
-    // boolean
-
-    private boolean isOpen = false;
+    Button btnUpdate;
+    Button btnDelete;
 
     // animation
 
@@ -60,12 +47,33 @@ public class AccountsFragment extends Fragment {
     private TextView totalIncomeResult;
     private TextView totalExpenseResult;
 
+    // Recyclerview
+
+    private RecyclerView recyclerView;
+
+    // Data item value
+
+    private String type;
+    private String name;
+    private int amount;
+
+    private String post_key;
+
+    // TextView
+
+    private TextView moneyAmount;
+    private TextView moneyName;
+
+    // Update EditText
+
+    private EditText edtAmount;
+    private Spinner edtType;
+    private EditText edtName;
+
     // Firebase
 
     private FirebaseAuth mAuth;
-//    private DatabaseReference mIncomeDatabase;
-//    private DatabaseReference mExpenseDatabase;
-    private DatabaseReference mChangeDatabase;
+    private DatabaseReference mAccountDatabase;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -77,196 +85,143 @@ public class AccountsFragment extends Fragment {
         FirebaseUser mUser = mAuth.getCurrentUser();
         String uid = mUser.getUid();
 
-//        mIncomeDatabase = FirebaseDatabase.getInstance().getReference().child("IncomeData").child(uid);
-//        mExpenseDatabase = FirebaseDatabase.getInstance().getReference().child("ExpenseData").child(uid);
-        mChangeDatabase = FirebaseDatabase.getInstance().getReference().child("ChangeData").child(uid);
+        mAccountDatabase = FirebaseDatabase.getInstance().getReference().child("AccountData").child(uid);
 
-        // connect floating button to layout
+        fab_main_btn = myview.findViewById(R.id.fb_account_plus_btn);
 
-        fab_main_btn = myview.findViewById(R.id.fb_main_plus_btn);
-        fab_income_btn = myview.findViewById(R.id.income_ft_btn);
-        fab_expense_btn = myview.findViewById(R.id.expense_ft_btn);
 
-        // connect floating text
+//////////
+        recyclerView = myview.findViewById(R.id.recycler_id_account);
 
-        fab_income_txt = myview.findViewById(R.id.income_ft_text);
-        fab_expense_txt = myview.findViewById(R.id.expense_ft_text);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
-        // Total income and expense result set
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(layoutManager);
 
-        totalIncomeResult = myview.findViewById(R.id.income_set_result);
-        totalExpenseResult = myview.findViewById(R.id.expense_set_result);
+//        mAccountDatabase.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//
+//                int totalValue = 0;
+//
+//                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
+//
+//                    Account account = mySnapshot.getValue(Account.class);
+////                    if (data.getChange().equals("income")) {
+////                        totalValue += data.getAmount();
+////                    }
+//                    String strTotalValue = String.valueOf(totalValue);
+//                    incomeTotalSum.setText(strTotalValue);
+//
+//                }
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//            }
+//        });
+////////
 
-        // animation connect
 
-        fadeOpen = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_open);
-        fadeClose = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_close);
+
+
+
+
+
+
+
+
 
         fab_main_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                addData();
-
-                if (isOpen) {
-
-                    fab_income_btn.startAnimation(fadeClose);
-                    fab_expense_btn.startAnimation(fadeClose);
-                    fab_income_btn.setClickable(false);
-                    fab_expense_btn.setClickable(false);
-
-                    fab_income_txt.startAnimation(fadeClose);
-                    fab_expense_txt.startAnimation(fadeClose);
-                    fab_income_txt.setClickable(false);
-                    fab_expense_txt.setClickable(false);
-                    isOpen = false;
-
-                } else {
-
-                    fab_income_btn.startAnimation(fadeOpen);
-                    fab_expense_btn.startAnimation(fadeOpen);
-                    fab_income_btn.setClickable(true);
-                    fab_expense_btn.setClickable(true);
-
-                    fab_income_txt.startAnimation(fadeOpen);
-                    fab_expense_txt.startAnimation(fadeOpen);
-                    fab_income_txt.setClickable(true);
-                    fab_expense_txt.setClickable(true);
-                    isOpen = true;
-
-                }
+                accountDataInsert();
 
             }
         });
+
+
 
         // calculate total income
 
-        mChangeDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                int totalsum = 0;
-
-                for (DataSnapshot mysnap : snapshot.getChildren()) {
-                    Data data = mysnap.getValue(Data.class);
-                    if (data.getChange().equals("income")) {
-                        totalsum += data.getAmount();
-                    }
-                }
-
-                String strResult = String.valueOf(totalsum);
-                totalIncomeResult.setText(strResult);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+//        mChangeDatabase.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//
+//                int totalsum = 0;
+//
+//                for (DataSnapshot mysnap : snapshot.getChildren()) {
+//                    Data data = mysnap.getValue(Data.class);
+//                    if (data.getChange().equals("income")) {
+//                        totalsum += data.getAmount();
+//                    }
+//                }
+//
+//                String strResult = String.valueOf(totalsum);
+//                totalIncomeResult.setText(strResult);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
 
         // calculate total expense
 
-        mChangeDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                int totalsum = 0;
-
-                for (DataSnapshot mysnap : snapshot.getChildren()) {
-                    Data data = mysnap.getValue(Data.class);
-                    if (data.getChange().equals("expense")) {
-                        totalsum += data.getAmount();
-                    }
-                }
-
-                String strResult = String.valueOf(totalsum);
-                totalExpenseResult.setText(strResult);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+//        mChangeDatabase.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//
+//                int totalsum = 0;
+//
+//                for (DataSnapshot mysnap : snapshot.getChildren()) {
+//                    Data data = mysnap.getValue(Data.class);
+//                    if (data.getChange().equals("expense")) {
+//                        totalsum += data.getAmount();
+//                    }
+//                }
+//
+//                String strResult = String.valueOf(totalsum);
+//                totalExpenseResult.setText(strResult);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
 
         return myview;
     }
 
-    // Floating button animation
-
-    private void ftAnimation() {
-        if (isOpen) {
-
-            fab_income_btn.startAnimation(fadeClose);
-            fab_expense_btn.startAnimation(fadeClose);
-            fab_income_btn.setClickable(false);
-            fab_expense_btn.setClickable(false);
-
-            fab_income_txt.startAnimation(fadeClose);
-            fab_expense_txt.startAnimation(fadeClose);
-            fab_income_txt.setClickable(false);
-            fab_expense_txt.setClickable(false);
-            isOpen = false;
-
-        } else {
-
-            fab_income_btn.startAnimation(fadeOpen);
-            fab_expense_btn.startAnimation(fadeOpen);
-            fab_income_btn.setClickable(true);
-            fab_expense_btn.setClickable(true);
-
-            fab_income_txt.startAnimation(fadeOpen);
-            fab_expense_txt.startAnimation(fadeOpen);
-            fab_income_txt.setClickable(true);
-            fab_expense_txt.setClickable(true);
-            isOpen = true;
-
-        }
-    }
-
-    private void addData() {
-        // Fab button income
-
-        fab_income_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                incomeDataInsert();
-            }
-        });
-
-        fab_expense_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                expenseDataInsert();
-            }
-        });
-    }
-
-    public void incomeDataInsert() {
+    public void accountDataInsert() {
 
         AlertDialog.Builder mydialog = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View myview = inflater.inflate(R.layout.custom_layout_for_insertdata, null);
+        View myview = inflater.inflate(R.layout.custom_layout_for_insertaccount, null);
         mydialog.setView(myview);
         final AlertDialog dialog = mydialog.create();
 
         dialog.setCancelable(false);
 
-        final EditText edtAmount = myview.findViewById(R.id.amount_edt);
-        final EditText edtNote = myview.findViewById(R.id.note_edt);
+        final EditText edtAmount = myview.findViewById(R.id.amount_edt_account);
+        final EditText edtName = myview.findViewById(R.id.name_edt_account);
 
-        String[] incomeType = {"Зарплата", "Сбережения", "Подарки", "Премия", "Проценты", "Другое"};
+        String[] accountType = {"Наличные", "Карта"};
 
         // spinner
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, incomeType);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, accountType);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        final Spinner edtType = myview.findViewById(R.id.type_edt);
+        final Spinner edtType = myview.findViewById(R.id.type_edt_account);
         edtType.setAdapter(adapter);
         edtType.setPrompt("Title");
         edtType.setSelection(0);
 
-        Button btnSave = myview.findViewById(R.id.btnSave);
-        Button btnCancel = myview.findViewById(R.id.btnCancel);
+        Button btnSave = myview.findViewById(R.id.btnSave_account);
+        Button btnCancel = myview.findViewById(R.id.btnCancel_account);
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -274,32 +229,33 @@ public class AccountsFragment extends Fragment {
 
                 String type = edtType.getSelectedItem().toString().trim();
                 String amount = edtAmount.getText().toString().trim();
-                String note = edtNote.getText().toString().trim();
+                String name = edtName.getText().toString().trim();
 
                 if (TextUtils.isEmpty(amount)) {
                     edtAmount.setError("Обязательное поле");
                     return;
                 }
 
+                if (TextUtils.isEmpty(name)) {
+                    edtName.setError("Обязательное поле");
+                    return;
+                }
+
                 int ourAmountInt = Integer.parseInt(amount);
 
-                String id = mChangeDatabase.push().getKey();
-                String mDate = DateFormat.getDateInstance().format(new Date());
-                Data data = new Data(ourAmountInt, type, "income", note, id, mDate);
+                String id = mAccountDatabase.push().getKey();
+                Account account = new Account(ourAmountInt, type, name, id);
 
-                mChangeDatabase.child(id).setValue(data);
+                mAccountDatabase.child(id).setValue(account);
                 Toast.makeText(getActivity(), "Данные сохранены", Toast.LENGTH_SHORT).show();
 
-                ftAnimation();
                 dialog.dismiss();
-
             }
         });
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ftAnimation();
                 dialog.dismiss();
             }
         });
@@ -308,65 +264,145 @@ public class AccountsFragment extends Fragment {
 
     }
 
-    public void expenseDataInsert() {
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        FirebaseRecyclerAdapter<Account, MyViewHolder> adapter = new FirebaseRecyclerAdapter<Account, MyViewHolder>
+                (
+                        Account.class,
+                        R.layout.account_recycler_data,
+                        MyViewHolder.class,
+                        mAccountDatabase
+                ) {
+            @Override
+            protected void populateViewHolder(final MyViewHolder myViewHolder, final Account model, final int position) {
+
+                myViewHolder.setName(model.getName());
+                myViewHolder.setImage(model.getType());
+                myViewHolder.setAmount(model.getAmount());
+
+                myViewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        post_key = getRef(myViewHolder.getAdapterPosition()).getKey();
+
+                        type = model.getType();
+                        name = model.getName();
+                        amount = model.getAmount();
+
+                        updateDataItem();
+                    }
+                });
+
+            }
+        };
+
+        recyclerView.setAdapter(adapter);
+
+    }
+
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
+
+        View mView;
+
+        public MyViewHolder(@NonNull View itemView) {
+            super(itemView);
+            mView = itemView;
+        }
+
+        private void setImage(String type) {
+            ImageView imageView = mView.findViewById(R.id.image_account);
+            if (type.equals("Карта")) {
+                imageView.setImageResource(R.drawable.ic_credit_card);
+            }
+        }
+
+        private void setName(String name) {
+            TextView mName = mView.findViewById(R.id.name_txt_account);
+            mName.setText(name);
+        }
+
+        private void setAmount(int amount) {
+            TextView mAmount = mView.findViewById(R.id.amount_txt_account);
+            String strAmount = String.valueOf(amount);
+            mAmount.setText(String.format("%s ₽", strAmount));
+        }
+
+    }
+
+    private void updateDataItem() {
 
         AlertDialog.Builder mydialog = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View myview = inflater.inflate(R.layout.custom_layout_for_insertdata, null);
+        View myview = inflater.inflate(R.layout.update_account_item, null);
         mydialog.setView(myview);
+
+        edtAmount = myview.findViewById(R.id.amount_edt_account);
+        edtType = myview.findViewById(R.id.type_edt_account);
+        edtName = myview.findViewById(R.id.name_edt_account);
+
+        String[] accountType = {"Наличные", "Карта"};
+
+        // spinner
+        ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, accountType);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        final Spinner edtType = myview.findViewById(R.id.type_edt_account);
+        edtType.setAdapter(adapter);
+        edtType.setPrompt("Title");
+        int spinnerPosition = adapter.getPosition(type);
+        edtType.setSelection(spinnerPosition);
+
+        // set data to EditText
+
+        edtName.setText(name);
+        edtName.setSelection(name.length());
+
+        edtAmount.setText(String.valueOf(amount));
+        edtAmount.setSelection(String.valueOf(amount).length());
+
+        btnUpdate = myview.findViewById(R.id.btnUpdate_account);
+        btnDelete = myview.findViewById(R.id.btnDelete_account);
 
         final AlertDialog dialog = mydialog.create();
 
-        dialog.setCancelable(false);
-
-        final EditText amount = myview.findViewById(R.id.amount_edt);
-        final EditText note = myview.findViewById(R.id.note_edt);
-
-        String[] expenseType = {"Продукты", "Семья", "Транспорт", "Досуг", "Кафе", "Здоровье", "Покупки", "Поездки", "Спорт", "Другое"};
-
-        // spinner
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, expenseType);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        final Spinner edtType = myview.findViewById(R.id.type_edt);
-        edtType.setAdapter(adapter);
-        edtType.setPrompt("Title");
-        edtType.setSelection(0);
-
-        Button btnSave = myview.findViewById(R.id.btnSave);
-        Button btnCancel = myview.findViewById(R.id.btnCancel);
-
-        btnSave.setOnClickListener(new View.OnClickListener() {
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                type = edtType.getSelectedItem().toString().trim();
+                name = edtName.getText().toString().trim();
+                String mAmount = String.valueOf(amount);
+                mAmount = edtAmount.getText().toString().trim();
+                int myAmount = Integer.parseInt(mAmount);
+                Account account = new Account(myAmount, type, name, post_key);
 
-                String tmAmount = amount.getText().toString().trim();
-                String tmType = edtType.getSelectedItem().toString().trim();
-                String tmNote = note.getText().toString().trim();
+                mAccountDatabase.child(post_key).setValue(account);
+//                if (change.equals("income")) {
+//                    mIncomeDatabase.child(post_key).setValue(data);
+//                } else if (change.equals("expense")) {
+//                    mExpenseDatabase.child(post_key).setValue(data);
+//                }
 
-                if (TextUtils.isEmpty(tmAmount)) {
-                    amount.setError("Обязательное поле");
-                    return;
-                }
-
-                int inAmount = Integer.parseInt(tmAmount);
-
-                String id = mChangeDatabase.push().getKey();
-                String mDate = DateFormat.getDateInstance().format(new Date());
-
-                Data data = new Data(inAmount, tmType, "expense", tmNote, id, mDate);
-                mChangeDatabase.child(id).setValue(data);
-                Toast.makeText(getActivity(), "Данные сохранены", Toast.LENGTH_SHORT).show();
-
-                ftAnimation();
                 dialog.dismiss();
-
             }
         });
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
+        btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ftAnimation();
+
+//                if (change.equals("income")) {
+//                    mIncomeDatabase.child(post_key).removeValue();
+//                } else if (change.equals("expense")) {
+//                    mExpenseDatabase.child(post_key).removeValue();
+//                }
+//                mIncomeDatabase.child(post_key).removeValue();
+//                mExpenseDatabase.child(post_key).removeValue();
+                mAccountDatabase.child(post_key).removeValue();
+
                 dialog.dismiss();
             }
         });

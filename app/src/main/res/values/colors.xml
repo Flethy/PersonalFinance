@@ -8,4 +8,5 @@
     <color name="backgroundColor">#CB997E</color>
     <color name="expenseColor">#5E4436</color>
     <color name="incomeColor">#000000</color>
+    <color name="accountColor">#D2A688</color>
 </resources>
