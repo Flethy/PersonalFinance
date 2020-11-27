@@ -7,14 +7,16 @@ public class Data {
     private String change;
     private String note;
     private String id;
+    private String account;
 
-    public Data(int amount, String type, String change, String note, String id, String date) {
+    public Data(int amount, String type, String change, String note, String id, String date, String account) {
         this.amount = amount;
         this.type = type;
         this.change = change;
         this.note = note;
         this.id = id;
         this.date = date;
+        this.account = account;
     }
 
     public int getAmount() {
@@ -71,4 +73,11 @@ public class Data {
 
     }
 
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
 }

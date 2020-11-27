@@ -159,57 +159,6 @@ public class AccountsFragment extends Fragment {
         });
 
 
-
-        // calculate total income
-
-//        mChangeDatabase.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//                int totalsum = 0;
-//
-//                for (DataSnapshot mysnap : snapshot.getChildren()) {
-//                    Data data = mysnap.getValue(Data.class);
-//                    if (data.getChange().equals("income")) {
-//                        totalsum += data.getAmount();
-//                    }
-//                }
-//
-//                String strResult = String.valueOf(totalsum);
-//                totalIncomeResult.setText(strResult);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-
-        // calculate total expense
-
-//        mChangeDatabase.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//                int totalsum = 0;
-//
-//                for (DataSnapshot mysnap : snapshot.getChildren()) {
-//                    Data data = mysnap.getValue(Data.class);
-//                    if (data.getChange().equals("expense")) {
-//                        totalsum += data.getAmount();
-//                    }
-//                }
-//
-//                String strResult = String.valueOf(totalsum);
-//                totalExpenseResult.setText(strResult);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-
         return myview;
     }
 

@@ -116,43 +116,45 @@ public class CategoriesFragment extends Fragment {
                 for (DataSnapshot mySnapshot : snapshot.getChildren()) {
                     //String[] expenseType = {"Продукты", "Семья", "Транспорт", "Досуг", "Кафе", "Здоровье", "Покупки",Подарки "Поездки", "Спорт", "Другое"};
                     Data data = mySnapshot.getValue(Data.class);
-                    if (data.getChange().equals("expense")) totalSum += data.getAmount();
-                    if (data.getType().equals("Продукты")) products += data.getAmount();
-                    else if (data.getType().equals("Кафе")) cafe += data.getAmount();
-                    else if (data.getType().equals("Досуг")) leisure += data.getAmount();
-                    else if (data.getType().equals("Транспорт")) transport += data.getAmount();
-                    else if (data.getType().equals("Подарки")) gifts += data.getAmount();
-                    else if (data.getType().equals("Покупки")) purchases += data.getAmount();
-                    else if (data.getType().equals("Другое")) other += data.getAmount();
-                    else if (data.getType().equals("Спорт")) sport += data.getAmount();
-                    else if (data.getType().equals("Поездки")) travel += data.getAmount();
-                    else if (data.getType().equals("Семья")) family += data.getAmount();
-                    else if (data.getType().equals("Здоровье")) health += data.getAmount();
-
-                    String strProducts = products + " ₽";
-                    String strCafe = cafe + " ₽";
-                    String strLeisure = leisure + " ₽";
-                    String strTransport = transport + " ₽";
-                    String strGifts = gifts + " ₽";
-                    String strPurchases = purchases + " ₽";
-                    String strOther = other + " ₽";
-                    String strSport = sport + " ₽";
-                    String strTravel = travel + " ₽";
-                    String strFamily = family + " ₽";
-                    String strHealth = health + " ₽";
-
-                    productsCost.setText(strProducts);
-                    cafeCost.setText(strCafe);
-                    leisureCost.setText(strLeisure);
-                    transportCost.setText(strTransport);
-                    giftsCost.setText(strGifts);
-                    purchasesCost.setText(strPurchases);
-                    otherCost.setText(strOther);
-                    sportCost.setText(strSport);
-                    travelCost.setText(strTravel);
-                    familyCost.setText(strFamily);
-                    healthCost.setText(strHealth);
+                    if (data.getChange().equals("expense")) {
+                        totalSum += data.getAmount();
+                        if (data.getType().equals("Продукты")) products += data.getAmount();
+                        else if (data.getType().equals("Кафе")) cafe += data.getAmount();
+                        else if (data.getType().equals("Досуг")) leisure += data.getAmount();
+                        else if (data.getType().equals("Транспорт")) transport += data.getAmount();
+                        else if (data.getType().equals("Подарки")) gifts += data.getAmount();
+                        else if (data.getType().equals("Покупки")) purchases += data.getAmount();
+                        else if (data.getType().equals("Другое")) other += data.getAmount();
+                        else if (data.getType().equals("Спорт")) sport += data.getAmount();
+                        else if (data.getType().equals("Поездки")) travel += data.getAmount();
+                        else if (data.getType().equals("Семья")) family += data.getAmount();
+                        else if (data.getType().equals("Здоровье")) health += data.getAmount();
+                    }
                 }
+
+                String strProducts = products + " ₽";
+                String strCafe = cafe + " ₽";
+                String strLeisure = leisure + " ₽";
+                String strTransport = transport + " ₽";
+                String strGifts = gifts + " ₽";
+                String strPurchases = purchases + " ₽";
+                String strOther = other + " ₽";
+                String strSport = sport + " ₽";
+                String strTravel = travel + " ₽";
+                String strFamily = family + " ₽";
+                String strHealth = health + " ₽";
+
+                productsCost.setText(strProducts);
+                cafeCost.setText(strCafe);
+                leisureCost.setText(strLeisure);
+                transportCost.setText(strTransport);
+                giftsCost.setText(strGifts);
+                purchasesCost.setText(strPurchases);
+                otherCost.setText(strOther);
+                sportCost.setText(strSport);
+                travelCost.setText(strTravel);
+                familyCost.setText(strFamily);
+                healthCost.setText(strHealth);
 
                 expenseCaption.setText("Расходы\n" + totalSum + " ₽");
 

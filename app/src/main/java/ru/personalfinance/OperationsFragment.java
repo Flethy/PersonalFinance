@@ -33,8 +33,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import ru.personalfinance.Model.Account;
 import ru.personalfinance.Model.Data;
 
 public class OperationsFragment extends Fragment {
@@ -67,6 +70,7 @@ public class OperationsFragment extends Fragment {
 
     private FirebaseAuth mAuth;
     private DatabaseReference mChangeDatabase;
+    private DatabaseReference mAccountDatabase;
 
     // Recyclerview
 
@@ -90,6 +94,7 @@ public class OperationsFragment extends Fragment {
 
     // Data item value
 
+    private String account;
     private String type;
     private String note;
     private String change;
@@ -108,6 +113,8 @@ public class OperationsFragment extends Fragment {
         String uid = mUser.getUid();
 
         mChangeDatabase = FirebaseDatabase.getInstance().getReference().child("ChangeData").child(uid);
+        mAccountDatabase = FirebaseDatabase.getInstance().getReference().child("AccountData").child(uid);
+
 
         recyclerView = myview.findViewById(R.id.recycler_id_income);
 
@@ -165,6 +172,26 @@ public class OperationsFragment extends Fragment {
             }
         });
 
+        final ArrayList<String> accounts = new ArrayList<String>();
+
+        mAccountDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                boolean isCash = false;
+
+                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
+
+                    Account account = mySnapshot.getValue(Account.class);
+                    accounts.add(account.getName());
+
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
         // connect floating button to layout
 
         fab_main_btn = myview.findViewById(R.id.fb_main_plus_btn);
@@ -185,7 +212,7 @@ public class OperationsFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                addData();
+                addData(accounts);
 
                 if (isOpen) {
 
@@ -253,25 +280,39 @@ public class OperationsFragment extends Fragment {
         }
     }
 
-    private void addData() {
+    private void addData(final ArrayList<String> accounts) {
         // Fab button income
 
         fab_income_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                incomeDataInsert();
+                incomeDataInsert(accounts);
             }
         });
 
         fab_expense_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                expenseDataInsert();
+                expenseDataInsert(accounts);
             }
         });
     }
 
-    public void incomeDataInsert() {
+    public void incomeDataInsert(ArrayList<String> accounts) {
+
+        final List<Account> accountsList = new ArrayList();
+        mAccountDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
+                    accountsList.add(mySnapshot.getValue(Account.class));
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
 
         AlertDialog.Builder mydialog = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -294,6 +335,13 @@ public class OperationsFragment extends Fragment {
         edtType.setPrompt("Title");
         edtType.setSelection(0);
 
+        ArrayAdapter<String> adapterAccounts = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, accounts);
+        adapterAccounts.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        final Spinner edtAccount = myview.findViewById(R.id.account_edt);
+        edtAccount.setAdapter(adapterAccounts);
+        edtAccount.setPrompt("Title");
+        edtAccount.setSelection(0);
+
         Button btnSave = myview.findViewById(R.id.btnSave);
         Button btnCancel = myview.findViewById(R.id.btnCancel);
 
@@ -304,6 +352,7 @@ public class OperationsFragment extends Fragment {
                 String type = edtType.getSelectedItem().toString().trim();
                 String amount = edtAmount.getText().toString().trim();
                 String note = edtNote.getText().toString().trim();
+                String account = edtAccount.getSelectedItem().toString().trim();
 
                 if (TextUtils.isEmpty(amount)) {
                     edtAmount.setError("Обязательное поле");
@@ -314,9 +363,17 @@ public class OperationsFragment extends Fragment {
 
                 String id = mChangeDatabase.push().getKey();
                 String mDate = DateFormat.getDateInstance().format(new Date());
-                Data data = new Data(ourAmountInt, type, "income", note, id, mDate);
-
+                Data data = new Data(ourAmountInt, type, "income", note, id, mDate, account);
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 mChangeDatabase.child(id).setValue(data);
+                for (int i = 0; i < accountsList.size(); i++) {
+                    if (accountsList.get(i).getName().equals(account)) {
+                        int newAmount = accountsList.get(i).getAmount() + ourAmountInt;
+                        accountsList.get(i).setAmount(newAmount);
+                        mAccountDatabase.child(accountsList.get(i).getId()).setValue(accountsList.get(i));
+                        break;
+                    }
+                }
                 Toast.makeText(getActivity(), "Данные сохранены", Toast.LENGTH_SHORT).show();
 
                 ftAnimation();
@@ -337,7 +394,21 @@ public class OperationsFragment extends Fragment {
 
     }
 
-    public void expenseDataInsert() {
+    public void expenseDataInsert(ArrayList<String> accounts) {
+
+        final List<Account> accountsList = new ArrayList();
+        mAccountDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
+                    accountsList.add(mySnapshot.getValue(Account.class));
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
 
         AlertDialog.Builder mydialog = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -361,6 +432,13 @@ public class OperationsFragment extends Fragment {
         edtType.setPrompt("Title");
         edtType.setSelection(0);
 
+        ArrayAdapter<String> adapterAccounts = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, accounts);
+        adapterAccounts.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        final Spinner edtAccount = myview.findViewById(R.id.account_edt);
+        edtAccount.setAdapter(adapterAccounts);
+        edtAccount.setPrompt("Title");
+        edtAccount.setSelection(0);
+
         Button btnSave = myview.findViewById(R.id.btnSave);
         Button btnCancel = myview.findViewById(R.id.btnCancel);
 
@@ -371,6 +449,7 @@ public class OperationsFragment extends Fragment {
                 String tmAmount = amount.getText().toString().trim();
                 String tmType = edtType.getSelectedItem().toString().trim();
                 String tmNote = note.getText().toString().trim();
+                String account = edtAccount.getSelectedItem().toString().trim();
 
                 if (TextUtils.isEmpty(tmAmount)) {
                     amount.setError("Обязательное поле");
@@ -382,8 +461,19 @@ public class OperationsFragment extends Fragment {
                 String id = mChangeDatabase.push().getKey();
                 String mDate = DateFormat.getDateInstance().format(new Date());
 
-                Data data = new Data(inAmount, tmType, "expense", tmNote, id, mDate);
+                Data data = new Data(inAmount, tmType, "expense", tmNote, id, mDate, account);
+
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
                 mChangeDatabase.child(id).setValue(data);
+                for (int i = 0; i < accountsList.size(); i++) {
+                    if (accountsList.get(i).getName().equals(account)) {
+                        int newAmount = accountsList.get(i).getAmount() - inAmount;
+                        accountsList.get(i).setAmount(newAmount);
+                        mAccountDatabase.child(accountsList.get(i).getId()).setValue(accountsList.get(i));
+                        break;
+                    }
+                }
                 Toast.makeText(getActivity(), "Данные сохранены", Toast.LENGTH_SHORT).show();
 
                 ftAnimation();
@@ -407,6 +497,26 @@ public class OperationsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        final ArrayList<String> accounts = new ArrayList<String>();
+
+        mAccountDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                boolean isCash = false;
+
+                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
+
+                    Account account = mySnapshot.getValue(Account.class);
+                    accounts.add(account.getName());
+
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
 
         FirebaseRecyclerAdapter<Data, MyViewHolder> adapter = new FirebaseRecyclerAdapter<Data, MyViewHolder>
                 (
@@ -433,8 +543,9 @@ public class OperationsFragment extends Fragment {
                         note = model.getNote();
                         amount = model.getAmount();
                         change = model.getChange();
+                        account = model.getAccount();
 
-                        updateDataItem();
+                        updateDataItem(accounts);
                     }
                 });
 
@@ -483,7 +594,21 @@ public class OperationsFragment extends Fragment {
 
     }
 
-    private void updateDataItem() {
+    private void updateDataItem(ArrayList<String> accounts) {
+
+        final List<Account> accountsList = new ArrayList();
+        mAccountDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
+                    accountsList.add(mySnapshot.getValue(Account.class));
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
 
         AlertDialog.Builder mydialog = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -504,12 +629,21 @@ public class OperationsFragment extends Fragment {
         } else {
             adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, expenseType);
         }
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         final Spinner edtType = myview.findViewById(R.id.type_edt);
         edtType.setAdapter(adapter);
         edtType.setPrompt("Title");
         int spinnerPosition = adapter.getPosition(type);
         edtType.setSelection(spinnerPosition);
+
+        ArrayAdapter<String> adapterAccounts = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, accounts);
+        adapterAccounts.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        final Spinner edtAccount = myview.findViewById(R.id.account_edt);
+        edtAccount.setAdapter(adapterAccounts);
+        edtAccount.setPrompt("Title");
+        int spinnerPositionAccount = adapterAccounts.getPosition(account);
+        edtAccount.setSelection(spinnerPositionAccount);
 
         // set data to EditText
 
@@ -530,20 +664,46 @@ public class OperationsFragment extends Fragment {
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                for (int i = 0; i < accountsList.size(); i++) {
+                    if (accountsList.get(i).getName().equals(account) && change.equals("expense")) {
+                        int newAmount = accountsList.get(i).getAmount() + amount;
+                        accountsList.get(i).setAmount(newAmount);
+                        mAccountDatabase.child(accountsList.get(i).getId()).setValue(accountsList.get(i));
+                        break;
+                    }
+                    if (accountsList.get(i).getName().equals(account) && change.equals("income")) {
+                        int newAmount = accountsList.get(i).getAmount() - amount;
+                        accountsList.get(i).setAmount(newAmount);
+                        mAccountDatabase.child(accountsList.get(i).getId()).setValue(accountsList.get(i));
+                        break;
+                    }
+                }
+
                 type = edtType.getSelectedItem().toString().trim();
+                account = edtAccount.getSelectedItem().toString().trim();
                 note = edtNote.getText().toString().trim();
                 String mAmount = String.valueOf(amount);
                 mAmount = edtAmount.getText().toString().trim();
                 int myAmount = Integer.parseInt(mAmount);
                 String mDate = DateFormat.getDateInstance().format(new Date());
-                Data data = new Data(myAmount, type, change, note, post_key, mDate);
+                Data data = new Data(myAmount, type, change, note, post_key, mDate, account);
 
                 mChangeDatabase.child(post_key).setValue(data);
-//                if (change.equals("income")) {
-//                    mIncomeDatabase.child(post_key).setValue(data);
-//                } else if (change.equals("expense")) {
-//                    mExpenseDatabase.child(post_key).setValue(data);
-//                }
+                for (int i = 0; i < accountsList.size(); i++) {
+                    if (accountsList.get(i).getName().equals(account) && change.equals("income")) {
+                        int newAmount = accountsList.get(i).getAmount() + myAmount;
+                        accountsList.get(i).setAmount(newAmount);
+                        mAccountDatabase.child(accountsList.get(i).getId()).setValue(accountsList.get(i));
+                        break;
+                    }
+                    if (accountsList.get(i).getName().equals(account) && change.equals("expense")) {
+                        int newAmount = accountsList.get(i).getAmount() - myAmount;
+                        accountsList.get(i).setAmount(newAmount);
+                        mAccountDatabase.child(accountsList.get(i).getId()).setValue(accountsList.get(i));
+                        break;
+                    }
+                }
 
                 dialog.dismiss();
             }
@@ -553,13 +713,21 @@ public class OperationsFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-//                if (change.equals("income")) {
-//                    mIncomeDatabase.child(post_key).removeValue();
-//                } else if (change.equals("expense")) {
-//                    mExpenseDatabase.child(post_key).removeValue();
-//                }
-//                mIncomeDatabase.child(post_key).removeValue();
-//                mExpenseDatabase.child(post_key).removeValue();
+                for (int i = 0; i < accountsList.size(); i++) {
+                    if (accountsList.get(i).getName().equals(account) && change.equals("expense")) {
+                        int newAmount = accountsList.get(i).getAmount() + amount;
+                        accountsList.get(i).setAmount(newAmount);
+                        mAccountDatabase.child(accountsList.get(i).getId()).setValue(accountsList.get(i));
+                        break;
+                    }
+                    if (accountsList.get(i).getName().equals(account) && change.equals("income")) {
+                        int newAmount = accountsList.get(i).getAmount() - amount;
+                        accountsList.get(i).setAmount(newAmount);
+                        mAccountDatabase.child(accountsList.get(i).getId()).setValue(accountsList.get(i));
+                        break;
+                    }
+                }
+
                 mChangeDatabase.child(post_key).removeValue();
 
                 dialog.dismiss();
