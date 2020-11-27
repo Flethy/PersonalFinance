@@ -24,8 +24,11 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import ru.personalfinance.Model.Account;
 
@@ -100,28 +103,41 @@ public class AccountsFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-//        mAccountDatabase.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//                int totalValue = 0;
-//
-//                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
-//
-//                    Account account = mySnapshot.getValue(Account.class);
-////                    if (data.getChange().equals("income")) {
-////                        totalValue += data.getAmount();
-////                    }
-//                    String strTotalValue = String.valueOf(totalValue);
-//                    incomeTotalSum.setText(strTotalValue);
-//
-//                }
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//            }
-//        });
-////////
+        mAccountDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                int totalValue = 0;
+                boolean isCash = false;
+
+                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
+
+                    Account account = mySnapshot.getValue(Account.class);
+                    if (account.getName().equals("Наличные")) {
+                        isCash = true;
+                        break;
+                    }
+
+                }
+
+                if (!isCash) {
+                    String type = "Наличные";
+                    String amount = "0";
+                    String name = "Наличные";
+
+                    int ourAmountInt = Integer.parseInt(amount);
+
+                    String id = mAccountDatabase.push().getKey();
+                    Account account = new Account(ourAmountInt, type, name, id);
+
+                    mAccountDatabase.child(id).setValue(account);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+//////
 
 
 

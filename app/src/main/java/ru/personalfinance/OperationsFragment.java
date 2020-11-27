@@ -351,7 +351,7 @@ public class OperationsFragment extends Fragment {
         final EditText amount = myview.findViewById(R.id.amount_edt);
         final EditText note = myview.findViewById(R.id.note_edt);
 
-        String[] expenseType = {"Продукты", "Семья", "Транспорт", "Досуг", "Кафе", "Здоровье", "Покупки", "Поездки", "Спорт", "Другое"};
+        String[] expenseType = {"Продукты", "Семья", "Транспорт", "Досуг", "Кафе", "Здоровье", "Покупки", "Подарки", "Поездки", "Спорт", "Другое"};
 
         // spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, expenseType);
@@ -495,7 +495,7 @@ public class OperationsFragment extends Fragment {
         edtNote = myview.findViewById(R.id.note_edt);
 
         String[] incomeType = {"Зарплата", "Сбережения", "Подарки", "Премия", "Проценты", "Другое"};
-        String[] expenseType = {"Продукты", "Семья", "Транспорт", "Досуг", "Кафе", "Здоровье", "Покупки", "Поездки", "Спорт", "Другое"};
+        String[] expenseType = {"Продукты", "Семья", "Транспорт", "Досуг", "Кафе", "Здоровье", "Покупки", "Подарки", "Поездки", "Спорт", "Другое"};
 
         // spinner
         ArrayAdapter<String> adapter;
