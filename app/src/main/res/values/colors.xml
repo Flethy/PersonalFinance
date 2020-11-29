@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#5E4436</color>
     <color name="colorAccent">#5E4436</color>
     <color name="colorLight">#EDDCD2</color>
+    <color name="colorWindow">#DCC0B0</color>
     <color name="colorDark">#5E4436</color>
     <color name="backgroundColor">#CB997E</color>
     <color name="expenseColor">#5E4436</color>

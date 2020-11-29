@@ -11,6 +11,7 @@
 
         <LinearLayout
             android:orientation="vertical"
+            android:background="@color/colorWindow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -27,6 +28,9 @@
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:textColor="@color/colorDark"
+                        android:textSize="15sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Сумма:"/>
@@ -40,6 +44,8 @@
                     android:layout_height="wrap_content">
 
                     <EditText
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:textColor="@color/colorDark"
                         android:inputType="number"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -62,6 +68,9 @@
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:textColor="@color/colorDark"
+                        android:textSize="15sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Категория:"/>
@@ -96,6 +105,9 @@
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:textColor="@color/colorDark"
+                        android:textSize="15sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Счёт:"/>
@@ -130,6 +142,9 @@
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:textColor="@color/colorDark"
+                        android:textSize="15sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Заметки:"/>
@@ -143,6 +158,8 @@
                     android:layout_height="wrap_content">
 
                     <EditText
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:textColor="@color/colorDark"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/note_edt"/>
@@ -164,6 +181,10 @@
                     android:layout_height="wrap_content">
 
                     <Button
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:textColor="@color/colorLight"
+                        android:background="@color/colorDark"
+                        android:textSize="16sp"
                         android:text="Отмена"
                         android:id="@+id/btnCancel"
                         android:textAppearance="?android:textAppearanceMedium"
@@ -180,7 +201,11 @@
                     android:layout_height="wrap_content">
 
                     <Button
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:textColor="@color/colorLight"
+                        android:background="@color/colorDark"
                         android:text="Добавить"
+                        android:textSize="16sp"
                         android:id="@+id/btnSave"
                         android:textAppearance="?android:textAppearanceMedium"
                         android:layout_width="match_parent"

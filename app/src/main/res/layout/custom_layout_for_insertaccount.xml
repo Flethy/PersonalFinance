@@ -10,6 +10,7 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:background="@color/colorWindow"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -27,6 +28,9 @@
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:textColor="@color/colorDark"
+                        android:textSize="15sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Сумма:"/>
@@ -40,6 +44,8 @@
                     android:layout_height="wrap_content">
 
                     <EditText
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:textColor="@color/colorDark"
                         android:inputType="number"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -62,6 +68,9 @@
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:textColor="@color/colorDark"
+                        android:textSize="15sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Тип:"/>
@@ -77,6 +86,8 @@
                     <Spinner
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:textColor="@color/colorLight"
                         android:id="@+id/type_edt_account"/>
 
                 </RelativeLayout>
@@ -96,6 +107,9 @@
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:textColor="@color/colorDark"
+                        android:textSize="15sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Наименование:"/>
@@ -104,11 +118,13 @@
 
                 <RelativeLayout
                     android:layout_width="0dp"
-                    android:layout_weight="2"
+                    android:layout_weight="1.5"
                     android:layout_margin="10dp"
                     android:layout_height="wrap_content">
 
                     <EditText
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:textColor="@color/colorDark"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/name_edt_account"/>
@@ -131,6 +147,10 @@
 
                     <Button
                         android:text="Отмена"
+                        android:textSize="16sp"
+                        android:textColor="@color/colorLight"
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:background="@color/colorDark"
                         android:id="@+id/btnCancel_account"
                         android:textAppearance="?android:textAppearanceMedium"
                         android:layout_width="match_parent"
@@ -147,6 +167,10 @@
 
                     <Button
                         android:text="Добавить"
+                        android:textSize="16sp"
+                        android:textColor="@color/colorLight"
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:background="@color/colorDark"
                         android:id="@+id/btnSave_account"
                         android:textAppearance="?android:textAppearanceMedium"
                         android:layout_width="match_parent"

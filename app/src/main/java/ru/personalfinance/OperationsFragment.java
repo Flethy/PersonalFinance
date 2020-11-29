@@ -100,6 +100,8 @@ public class OperationsFragment extends Fragment {
     private String change;
     private int amount;
 
+    private List<Account> accountsList;
+
     private String post_key;
 
     @Override
@@ -114,6 +116,29 @@ public class OperationsFragment extends Fragment {
 
         mChangeDatabase = FirebaseDatabase.getInstance().getReference().child("ChangeData").child(uid);
         mAccountDatabase = FirebaseDatabase.getInstance().getReference().child("AccountData").child(uid);
+
+
+
+
+        accountsList = new ArrayList();
+        mAccountDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+//                accountsList = new ArrayList();
+                if (accountsList.isEmpty()) {
+                    for (DataSnapshot mySnapshot : snapshot.getChildren()) {
+                        accountsList.add(mySnapshot.getValue(Account.class));
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
+
+
 
 
         recyclerView = myview.findViewById(R.id.recycler_id_income);
@@ -178,7 +203,7 @@ public class OperationsFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                boolean isCash = false;
+                accounts.clear();
 
                 for (DataSnapshot mySnapshot : snapshot.getChildren()) {
 
@@ -300,19 +325,19 @@ public class OperationsFragment extends Fragment {
 
     public void incomeDataInsert(ArrayList<String> accounts) {
 
-        final List<Account> accountsList = new ArrayList();
-        mAccountDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
-                    accountsList.add(mySnapshot.getValue(Account.class));
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+//        final List<Account> accountsList = new ArrayList();
+//        mAccountDatabase.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                accountsList.clear();
+//                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
+//                    accountsList.add(mySnapshot.getValue(Account.class));
+//                }
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//            }
+//        });
 
         AlertDialog.Builder mydialog = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -396,19 +421,19 @@ public class OperationsFragment extends Fragment {
 
     public void expenseDataInsert(ArrayList<String> accounts) {
 
-        final List<Account> accountsList = new ArrayList();
-        mAccountDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
-                    accountsList.add(mySnapshot.getValue(Account.class));
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+//        final List<Account> accountsList = new ArrayList();
+//        mAccountDatabase.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                accountsList.clear();
+//                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
+//                    accountsList.add(mySnapshot.getValue(Account.class));
+//                }
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//            }
+//        });
 
         AlertDialog.Builder mydialog = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -504,7 +529,7 @@ public class OperationsFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                boolean isCash = false;
+                accounts.clear();
 
                 for (DataSnapshot mySnapshot : snapshot.getChildren()) {
 
@@ -596,19 +621,19 @@ public class OperationsFragment extends Fragment {
 
     private void updateDataItem(ArrayList<String> accounts) {
 
-        final List<Account> accountsList = new ArrayList();
-        mAccountDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
-                    accountsList.add(mySnapshot.getValue(Account.class));
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+//        final List<Account> accountsList = new ArrayList();
+//        mAccountDatabase.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                accountsList.clear();
+//                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
+//                    accountsList.add(mySnapshot.getValue(Account.class));
+//                }
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//            }
+//        });
 
         AlertDialog.Builder mydialog = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -638,6 +663,7 @@ public class OperationsFragment extends Fragment {
         edtType.setSelection(spinnerPosition);
 
         ArrayAdapter<String> adapterAccounts = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, accounts);
+//        Log.d("strange", accountsList.toString());
         adapterAccounts.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         final Spinner edtAccount = myview.findViewById(R.id.account_edt);
         edtAccount.setAdapter(adapterAccounts);
