@@ -64,7 +64,7 @@ public class HomeActivity extends AppCompatActivity implements OnNavigationItemS
         operationsFragment = new OperationsFragment();
         overViewFragment = new OverViewFragment();
 
-        setFragment(accountsFragment);
+        setFragment(categoriesFragment);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override

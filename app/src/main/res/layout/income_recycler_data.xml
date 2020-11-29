@@ -17,6 +17,7 @@
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_weight="1"
+            android:layout_marginEnd="20dp"
             android:layout_gravity="center_vertical"
             android:layout_height="wrap_content">
 
@@ -71,6 +72,17 @@
                 android:textColor="@color/expenseColor"
                 android:fontFamily="@font/comfortaa_bold"
                 android:id="@+id/amount_txt_income"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Наличные"
+                android:textSize="12sp"
+                android:textColor="@color/expenseColor"
+                android:fontFamily="@font/comfortaa_bold"
+                android:layout_below="@+id/amount_txt_income"
+                android:id="@+id/account_txt_income"
                 android:textAppearance="?android:textAppearanceMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>

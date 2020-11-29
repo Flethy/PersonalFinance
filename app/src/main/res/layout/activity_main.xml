@@ -65,16 +65,16 @@
                 android:id="@+id/btn_login"
                 />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@color/colorDark"
-                android:text="Забыли пароль?"
-                android:fontFamily="@font/comfortaa_bold"
-                android:padding="5dp"
-                android:id="@+id/forget_password"
-                />
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:gravity="center"-->
+<!--                android:textColor="@color/colorDark"-->
+<!--                android:text="Забыли пароль?"-->
+<!--                android:fontFamily="@font/comfortaa_bold"-->
+<!--                android:padding="5dp"-->
+<!--                android:id="@+id/forget_password"-->
+<!--                />-->
 
             <TextView
                 android:layout_width="match_parent"

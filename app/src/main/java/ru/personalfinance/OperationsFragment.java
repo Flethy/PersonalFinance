@@ -124,8 +124,6 @@ public class OperationsFragment extends Fragment {
         mAccountDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-//                accountsList = new ArrayList();
                 if (accountsList.isEmpty()) {
                     for (DataSnapshot mySnapshot : snapshot.getChildren()) {
                         accountsList.add(mySnapshot.getValue(Account.class));
@@ -325,20 +323,6 @@ public class OperationsFragment extends Fragment {
 
     public void incomeDataInsert(ArrayList<String> accounts) {
 
-//        final List<Account> accountsList = new ArrayList();
-//        mAccountDatabase.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                accountsList.clear();
-//                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
-//                    accountsList.add(mySnapshot.getValue(Account.class));
-//                }
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//            }
-//        });
-
         AlertDialog.Builder mydialog = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         View myview = inflater.inflate(R.layout.custom_layout_for_insertdata, null);
@@ -389,7 +373,6 @@ public class OperationsFragment extends Fragment {
                 String id = mChangeDatabase.push().getKey();
                 String mDate = DateFormat.getDateInstance().format(new Date());
                 Data data = new Data(ourAmountInt, type, "income", note, id, mDate, account);
-                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 mChangeDatabase.child(id).setValue(data);
                 for (int i = 0; i < accountsList.size(); i++) {
                     if (accountsList.get(i).getName().equals(account)) {
@@ -420,20 +403,6 @@ public class OperationsFragment extends Fragment {
     }
 
     public void expenseDataInsert(ArrayList<String> accounts) {
-
-//        final List<Account> accountsList = new ArrayList();
-//        mAccountDatabase.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                accountsList.clear();
-//                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
-//                    accountsList.add(mySnapshot.getValue(Account.class));
-//                }
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//            }
-//        });
 
         AlertDialog.Builder mydialog = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -487,8 +456,6 @@ public class OperationsFragment extends Fragment {
                 String mDate = DateFormat.getDateInstance().format(new Date());
 
                 Data data = new Data(inAmount, tmType, "expense", tmNote, id, mDate, account);
-
-                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                 mChangeDatabase.child(id).setValue(data);
                 for (int i = 0; i < accountsList.size(); i++) {
@@ -556,6 +523,7 @@ public class OperationsFragment extends Fragment {
                 myViewHolder.setType(model.getType());
                 myViewHolder.setNote(model.getNote());
                 myViewHolder.setDate(model.getDate());
+                myViewHolder.setAccount(model.getAccount());
                 myViewHolder.setAmount(model.getAmount(), model.getChange());
 
                 myViewHolder.mView.setOnClickListener(new View.OnClickListener() {
@@ -605,6 +573,11 @@ public class OperationsFragment extends Fragment {
             mDate.setText(date);
         }
 
+        private void setAccount(String account) {
+            TextView accountTxt = mView.findViewById(R.id.account_txt_income);
+            accountTxt.setText(account);
+        }
+
         @SuppressLint("ResourceAsColor")
         private void setAmount(int amount, String change) {
             TextView mAmount = mView.findViewById(R.id.amount_txt_income);
@@ -620,20 +593,6 @@ public class OperationsFragment extends Fragment {
     }
 
     private void updateDataItem(ArrayList<String> accounts) {
-
-//        final List<Account> accountsList = new ArrayList();
-//        mAccountDatabase.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                accountsList.clear();
-//                for (DataSnapshot mySnapshot : snapshot.getChildren()) {
-//                    accountsList.add(mySnapshot.getValue(Account.class));
-//                }
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//            }
-//        });
 
         AlertDialog.Builder mydialog = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -663,18 +622,12 @@ public class OperationsFragment extends Fragment {
         edtType.setSelection(spinnerPosition);
 
         ArrayAdapter<String> adapterAccounts = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, accounts);
-//        Log.d("strange", accountsList.toString());
         adapterAccounts.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         final Spinner edtAccount = myview.findViewById(R.id.account_edt);
         edtAccount.setAdapter(adapterAccounts);
         edtAccount.setPrompt("Title");
         int spinnerPositionAccount = adapterAccounts.getPosition(account);
         edtAccount.setSelection(spinnerPositionAccount);
-
-        // set data to EditText
-
-//        edtType.setSelected(type);
-//        edtType.setSelection(type.length());
 
         edtNote.setText(note);
         edtNote.setSelection(note.length());
