@@ -164,7 +164,7 @@ public class OperationsFragment extends Fragment {
                         totalValue += data.getAmount();
                     }
                     String strTotalValue = String.valueOf(totalValue);
-                    incomeTotalSum.setText(strTotalValue);
+                    incomeTotalSum.setText(strTotalValue + " ₽");
 
                 }
             }
@@ -186,7 +186,7 @@ public class OperationsFragment extends Fragment {
                         totalValue += data.getAmount();
                     }
                     String strTotalValue = String.valueOf(totalValue);
-                    expenseTotalSum.setText(strTotalValue);
+                    expenseTotalSum.setText(strTotalValue + " ₽");
 
                 }
             }
