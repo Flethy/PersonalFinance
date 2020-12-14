@@ -2,6 +2,8 @@ package ru.personalfinance;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,6 +14,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -32,9 +35,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import ru.personalfinance.Model.Account;
@@ -86,6 +91,7 @@ public class OperationsFragment extends Fragment {
     private EditText edtAmount;
     private Spinner edtType;
     private EditText edtNote;
+    private TextView edtDate;
 
     // Button for update and delete
 
@@ -95,6 +101,8 @@ public class OperationsFragment extends Fragment {
     // Data item value
 
     private String account;
+    private Date mdate;
+    private long date;
     private String type;
     private String note;
     private String change;
@@ -116,6 +124,8 @@ public class OperationsFragment extends Fragment {
 
         mChangeDatabase = FirebaseDatabase.getInstance().getReference().child("ChangeData").child(uid);
         mAccountDatabase = FirebaseDatabase.getInstance().getReference().child("AccountData").child(uid);
+
+//        mChangeDatabase.orderByChild("amount");
 
 
 
@@ -333,6 +343,36 @@ public class OperationsFragment extends Fragment {
 
         final EditText edtAmount = myview.findViewById(R.id.amount_edt);
         final EditText edtNote = myview.findViewById(R.id.note_edt);
+        final TextView edtDate = myview.findViewById(R.id.date_edt);
+//        edtDate.setText(DateFormat.getDateInstance().format(new Date()));
+        SimpleDateFormat fmt = new SimpleDateFormat("dd MMM yyyy");
+        edtDate.setText(fmt.format(new Date()));
+        Calendar c = Calendar.getInstance();
+        final int year = c.get(Calendar.YEAR);
+        final int month = c.get(Calendar.MONTH);
+        final int day = c.get(Calendar.DAY_OF_MONTH);
+
+        final OnDateSetListener callback = new OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                Calendar calendar = new GregorianCalendar(year, month , dayOfMonth);
+                mdate = calendar.getTime();
+                SimpleDateFormat fmt = new SimpleDateFormat("dd MMM yyyy");
+                edtDate.setText(fmt.format(mdate));
+//                date = mdate.getTime();
+            }
+        };
+
+        edtDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(getContext(), callback,
+                        year,
+                        month,
+                        day)
+                        .show();
+            }
+        });
 
         String[] incomeType = {"Зарплата", "Сбережения", "Подарки", "Премия", "Проценты", "Другое"};
 
@@ -371,8 +411,10 @@ public class OperationsFragment extends Fragment {
                 int ourAmountInt = Integer.parseInt(amount);
 
                 String id = mChangeDatabase.push().getKey();
-                String mDate = DateFormat.getDateInstance().format(new Date());
-                Data data = new Data(ourAmountInt, type, "income", note, id, mDate, account);
+                //String mDate = DateFormat.getDateInstance().format(new Date());
+//                String mDate = (String) edtDate.getText();
+                if (mdate == null) mdate = new Date();
+                Data data = new Data(ourAmountInt, type, "income", note, id, mdate.getTime(), account);
                 mChangeDatabase.child(id).setValue(data);
                 for (int i = 0; i < accountsList.size(); i++) {
                     if (accountsList.get(i).getName().equals(account)) {
@@ -415,6 +457,35 @@ public class OperationsFragment extends Fragment {
 
         final EditText amount = myview.findViewById(R.id.amount_edt);
         final EditText note = myview.findViewById(R.id.note_edt);
+        final TextView edtDate = myview.findViewById(R.id.date_edt);
+//        edtDate.setText(DateFormat.getDateInstance().format(new Date()));
+        SimpleDateFormat fmt = new SimpleDateFormat("dd MMM yyyy");
+        edtDate.setText(fmt.format(new Date()));
+        Calendar c = Calendar.getInstance();
+        final int year = c.get(Calendar.YEAR);
+        final int month = c.get(Calendar.MONTH);
+        final int day = c.get(Calendar.DAY_OF_MONTH);
+
+        final OnDateSetListener callback = new OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                Calendar calendar = new GregorianCalendar(year, month , dayOfMonth);
+                mdate = calendar.getTime();
+                SimpleDateFormat fmt = new SimpleDateFormat("dd MMM yyyy");
+                edtDate.setText(fmt.format(mdate));
+            }
+        };
+
+        edtDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(getContext(), callback,
+                        year,
+                        month,
+                        day)
+                        .show();
+            }
+        });
 
         String[] expenseType = {"Продукты", "Семья", "Транспорт", "Досуг", "Кафе", "Здоровье", "Покупки", "Подарки", "Поездки", "Спорт", "Другое"};
 
@@ -453,9 +524,10 @@ public class OperationsFragment extends Fragment {
                 int inAmount = Integer.parseInt(tmAmount);
 
                 String id = mChangeDatabase.push().getKey();
-                String mDate = DateFormat.getDateInstance().format(new Date());
-
-                Data data = new Data(inAmount, tmType, "expense", tmNote, id, mDate, account);
+//                String mDate = DateFormat.getDateInstance().format(new Date());
+                //String mDate = (String) edtDate.getText();
+                if (mdate == null) mdate = new Date();
+                Data data = new Data(inAmount, tmType, "expense", tmNote, id, mdate.getTime(), account);
 
                 mChangeDatabase.child(id).setValue(data);
                 for (int i = 0; i < accountsList.size(); i++) {
@@ -490,6 +562,8 @@ public class OperationsFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+//        mChangeDatabase.orderByChild("amount");
+
         final ArrayList<String> accounts = new ArrayList<String>();
 
         mAccountDatabase.addValueEventListener(new ValueEventListener() {
@@ -515,10 +589,13 @@ public class OperationsFragment extends Fragment {
                         Data.class,
                         R.layout.income_recycler_data,
                         MyViewHolder.class,
-                        mChangeDatabase
+                        mChangeDatabase.orderByChild("date")
                 ) {
             @Override
             protected void populateViewHolder(final MyViewHolder myViewHolder, final Data model, final int position) {
+
+//                Query mQuery = mChangeDatabase.orderByChild("date");
+
 
                 myViewHolder.setType(model.getType());
                 myViewHolder.setNote(model.getNote());
@@ -537,6 +614,7 @@ public class OperationsFragment extends Fragment {
                         amount = model.getAmount();
                         change = model.getChange();
                         account = model.getAccount();
+                        date = model.getDate();
 
                         updateDataItem(accounts);
                     }
@@ -568,9 +646,10 @@ public class OperationsFragment extends Fragment {
             mNote.setText(note);
         }
 
-        private void setDate(String date) {
+        private void setDate(long date) {
             TextView mDate = mView.findViewById(R.id.date_txt_income);
-            mDate.setText(date);
+            SimpleDateFormat fmt = new SimpleDateFormat("dd MMM yyyy");
+            mDate.setText(fmt.format(new Date(date)));
         }
 
         private void setAccount(String account) {
@@ -602,6 +681,7 @@ public class OperationsFragment extends Fragment {
         edtAmount = myview.findViewById(R.id.amount_edt);
         edtType = myview.findViewById(R.id.type_edt);
         edtNote = myview.findViewById(R.id.note_edt);
+        edtDate = myview.findViewById(R.id.date_edt);
 
         String[] incomeType = {"Зарплата", "Сбережения", "Подарки", "Премия", "Проценты", "Другое"};
         String[] expenseType = {"Продукты", "Семья", "Транспорт", "Досуг", "Кафе", "Здоровье", "Покупки", "Подарки", "Поездки", "Спорт", "Другое"};
@@ -635,6 +715,38 @@ public class OperationsFragment extends Fragment {
         edtAmount.setText(String.valueOf(amount));
         edtAmount.setSelection(String.valueOf(amount).length());
 
+        SimpleDateFormat fmt = new SimpleDateFormat("dd MMM yyyy");
+        mdate = new Date(date);
+        edtDate.setText(fmt.format(mdate));
+
+        Calendar c = Calendar.getInstance();
+        final int year = c.get(Calendar.YEAR);
+        final int month = c.get(Calendar.MONTH);
+        final int day = c.get(Calendar.DAY_OF_MONTH);
+
+        final OnDateSetListener callback = new OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                Calendar calendar = new GregorianCalendar(year, month , dayOfMonth);
+                mdate = calendar.getTime();
+                SimpleDateFormat fmt = new SimpleDateFormat("dd MMM yyyy");
+                edtDate.setText(fmt.format(mdate));
+            }
+        };
+
+        edtDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(getContext(), callback,
+                        year,
+                        month,
+                        day)
+                        .show();
+            }
+        });
+
+
+
         btnUpdate = myview.findViewById(R.id.btnUpdate);
         btnDelete = myview.findViewById(R.id.btnDelete);
 
@@ -665,8 +777,9 @@ public class OperationsFragment extends Fragment {
                 String mAmount = String.valueOf(amount);
                 mAmount = edtAmount.getText().toString().trim();
                 int myAmount = Integer.parseInt(mAmount);
-                String mDate = DateFormat.getDateInstance().format(new Date());
-                Data data = new Data(myAmount, type, change, note, post_key, mDate, account);
+//                String mDate = DateFormat.getDateInstance().format(new Date());
+                //String mDate = (String) edtDate.getText();
+                Data data = new Data(myAmount, type, change, note, post_key, mdate.getTime(), account);
 
                 mChangeDatabase.child(post_key).setValue(data);
                 for (int i = 0; i < accountsList.size(); i++) {

@@ -7,9 +7,10 @@ public class Data {
     private String change;
     private String note;
     private String id;
+    private long date;
     private String account;
 
-    public Data(int amount, String type, String change, String note, String id, String date, String account) {
+    public Data(int amount, String type, String change, String note, String id, long date, String account) {
         this.amount = amount;
         this.type = type;
         this.change = change;
@@ -59,15 +60,13 @@ public class Data {
         this.id = id;
     }
 
-    public String getDate() {
+    public long getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(long date) {
         this.date = date;
     }
-
-    private String date;
 
     public Data() {
 
